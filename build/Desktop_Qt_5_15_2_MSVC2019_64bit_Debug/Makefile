@@ -260,13 +260,19 @@ Makefile: D:\QTProject\HostComputer\HostComputer.pro D:\Qt\5.15.2\msvc2019_64\mk
 		D:\Qt\5.15.2\msvc2019_64\mkspecs\features\yacc.prf \
 		D:\Qt\5.15.2\msvc2019_64\mkspecs\features\lex.prf \
 		D:\QTProject\HostComputer\HostComputer.pro \
+		D:\Qt\5.15.2\msvc2019_64\lib\Qt5PrintSupport.prl \
+		D:\Qt\5.15.2\msvc2019_64\lib\Qt5OpenGL.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.prl \
+		D:\Qt\5.15.2\msvc2019_64\lib\Qt5SerialPort.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\qtmain.prl \
 		D:\Qt\5.15.2\msvc2019_64\mkspecs\features\build_pass.prf \
+		D:\Qt\5.15.2\msvc2019_64\lib\Qt5PrintSupportd.prl \
+		D:\Qt\5.15.2\msvc2019_64\lib\Qt5OpenGLd.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.prl \
+		D:\Qt\5.15.2\msvc2019_64\lib\Qt5SerialPortd.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\qtmaind.prl
 	$(QMAKE) -o Makefile D:\QTProject\HostComputer\HostComputer.pro -spec win32-msvc "CONFIG+=debug" "CONFIG+=qml_debug"
@@ -446,13 +452,19 @@ D:\Qt\5.15.2\msvc2019_64\mkspecs\features\exceptions.prf:
 D:\Qt\5.15.2\msvc2019_64\mkspecs\features\yacc.prf:
 D:\Qt\5.15.2\msvc2019_64\mkspecs\features\lex.prf:
 D:\QTProject\HostComputer\HostComputer.pro:
+D:\Qt\5.15.2\msvc2019_64\lib\Qt5PrintSupport.prl:
+D:\Qt\5.15.2\msvc2019_64\lib\Qt5OpenGL.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.prl:
+D:\Qt\5.15.2\msvc2019_64\lib\Qt5SerialPort.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\qtmain.prl:
 D:\Qt\5.15.2\msvc2019_64\mkspecs\features\build_pass.prf:
+D:\Qt\5.15.2\msvc2019_64\lib\Qt5PrintSupportd.prl:
+D:\Qt\5.15.2\msvc2019_64\lib\Qt5OpenGLd.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.prl:
+D:\Qt\5.15.2\msvc2019_64\lib\Qt5SerialPortd.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\qtmaind.prl:
 qmake: FORCE
