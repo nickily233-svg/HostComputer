@@ -1,4 +1,4 @@
-#include "src/ui/galvo_page.h"
+#include "src/pages/galvo_page.h"
 
 GalvoWidget::GalvoWidget(QWidget *parent)
     :QWidget(parent)

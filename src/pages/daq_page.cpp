@@ -1,24 +1,21 @@
-#include "src/ui/daq_page.h"
+#include "src/pages/daq_page.h"
 
-/*
- * 构造函数
- */
 DAQWidget::DAQWidget(QWidget *parent)
-    : QWidget(parent),tableWidget(nullptr),WavePlot(nullptr),statusLabel(nullptr),shadowEffect(nullptr)
+    : QWidget(parent),
+    WavePlot(nullptr), statusLabel(nullptr), shadowEffect(nullptr),
+    m_channelSelector(nullptr), m_statsTable(nullptr),
+    m_rulerWidget(nullptr), m_commandWidget(nullptr)
 {
     WaveTimer = new QTimer(this);
     WaveTimer->setSingleShot(false);
     WaveTimer->setInterval(static_cast<double>(30.0f));
 
     initUI();
+    setupConnections();
 
     WaveTimer->start();
-
 }
 
-/*
- * 析构函数
- */
 DAQWidget::~DAQWidget()
 {
 
@@ -29,7 +26,6 @@ DAQWidget::~DAQWidget()
  */
 void DAQWidget::initUI()
 {
-
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->setSpacing(0);
@@ -54,8 +50,6 @@ void DAQWidget::initUI()
     initRightBar();
     initWaveArea();
     initBottomStatusBar();
-    onConnectSlot();
-
 }
 
 /*
@@ -134,7 +128,6 @@ void DAQWidget::initTopBar()
 
     /*-----init-----*/
     DragWaveFormCheckBox->setChecked(true);
-
 }
 
 /*
@@ -142,9 +135,7 @@ void DAQWidget::initTopBar()
  */
 void DAQWidget::initRightBar()
 {
-
     initRightPanelUI();
-
 }
 
 /*
@@ -173,29 +164,10 @@ void DAQWidget::initWaveArea()
 
     WavePlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
 
-    // WavePlot->xAxis->setRange(0, 2 * PI);
-    // WavePlot->yAxis->setRange(-1.2, 1.2);
-
     WavePlot->xAxis->setLabel(" X 轴 ");
     WavePlot->yAxis->setLabel(" Y 轴 ");
     WavePlot->xAxis->setLabelFont(QFont("Microsoft YaHei",9));
     WavePlot->yAxis->setLabelFont(QFont("Microsoft YaHei",9));
-
-    // WavePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    // WavePlot->axisRect()->setRangeDrag(Qt::Horizontal | Qt::Vertical);
-    // WavePlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
-
-    // Test
-    // x.resize(101);
-    // for(int i = 0;i < 101;i++)
-    // {
-    //     x[i] = i * (2 * PI / 100.0);
-    // }
-    // y.resize(101);
-
-    // WavePlot->addGraph();
-    // WavePlot->graph(0)->setPen(QPen(Qt::black));
-    // WavePlot->replot();
 
     waveAreaWidget->setLayout(WaveLayout);
 }
@@ -205,7 +177,6 @@ void DAQWidget::initWaveArea()
  */
 void DAQWidget::initBottomStatusBar()
 {
-
     QHBoxLayout *BottomStatusLayout = new QHBoxLayout(BottomStatusBar);
     BottomStatusLayout->setContentsMargins(5,0,5,0);
     BottomStatusLayout->setSpacing(5);
@@ -227,7 +198,6 @@ void DAQWidget::initBottomStatusBar()
     BottomStatusLayout->addWidget(percentLabel);
 
     BottomStatusLayout->addStretch();
-
 }
 
 /*
@@ -235,29 +205,9 @@ void DAQWidget::initBottomStatusBar()
  */
 void DAQWidget::onConnectSlot()
 {
-    // Test
-    // connect(WaveTimer,&QTimer::timeout,this,[=](){
-
-    //     static double phase = 0;
-    //     phase += 0.1;
-
-    //     for(int i = 0; i < 101; i++) {
-    //         y[i] = std::sin(x[i] + phase);
-    //     }
-
-    //     WavePlot->graph(0)->setData(x,y);
-    //     WavePlot->replot(QCustomPlot::rpQueuedReplot);
-    // });
-
     connect(DragWaveFormCheckBox,&QCheckBox::toggled,this,[=](bool checked){
         if (checked) {
             WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
-
-            // WavePlot->axisRect()->setRangeDrag(Qt::Horizontal);
-            // WavePlot->axisRect()->setRangeDrag(Qt::Vertical);
-            // WavePlot->axisRect()->setRangeZoom(Qt::Horizontal);
-            // WavePlot->axisRect()->setRangeZoom(Qt::Vertical);
-
             WavePlot->setSelectionRectMode(QCP::srmNone);
         } else {
             WavePlot->setInteractions(QCP::iNone);
@@ -268,7 +218,6 @@ void DAQWidget::onConnectSlot()
     connect(ZoomAreaCheckBox, &QCheckBox::toggled, this, [=](bool checked){
         if (checked) {
             WavePlot->setInteractions(QCP::iNone);
-
             WavePlot->setSelectionRectMode(QCP::srmZoom);
             WavePlot->selectionRect()->setPen(QPen(Qt::blue, 1, Qt::DashLine));
             WavePlot->selectionRect()->setBrush(QBrush(QColor(0, 170, 255, 50)));
@@ -279,32 +228,23 @@ void DAQWidget::onConnectSlot()
     });
 
     connect(edgeTypeBtn,&QPushButton::clicked,this,[=](){
-
         currentEdgeIndex = (currentEdgeIndex + 1) % edgeTypeList.size();
-
         edgeTypeBtn->setText(edgeTypeList[currentEdgeIndex]);
-
     });
 
     connect(SelectDeviceBtn,&QPushButton::clicked,this,[=](){
-
         emit SelectDeviceClicked();
-
     });
 
     /*-----init status-----*/
     if(DragWaveFormCheckBox->isChecked()) {
-
         WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
-
     }
 }
 
 void DAQWidget::ShowWaveLegend()
 {
-
     WavePlot->legend->setVisible(true);
-    // WavePlot->legend->setBrush(QColor(255,255,255,150));
     WavePlot->legend->setTextColor(Qt::black);
     WavePlot->legend->setFont(QFont("Microsoft YaHei", 9));
     WavePlot->legend->setBorderPen(Qt::NoPen);
@@ -319,25 +259,26 @@ void DAQWidget::ShowWaveLegend()
         WavePlot->graph(i)->setName(ChxList[i]);
         WavePlot->graph(i)->setPen(QPen(colors[i % ChxList.size()]));
     }
-
 }
 
+/*
+ * 右侧面板组装
+ */
 void DAQWidget::initRightPanelUI()
 {
     RightPanelMainLayout = new QVBoxLayout(RightPanelWidget);
 
-    QTableWidget *datatablewidget = initDataTableWidget();
-    QWidget *chxwidget = initchannelWidget();
-    QWidget *runlerwidget = initRulerWidget();
-    QWidget *commandwidget = initCommandWidget();
+    m_channelSelector = new ChannelSelectorWidget(RightPanelWidget);
+    m_statsTable      = new DataStatisticsTable(RightPanelWidget);
+    m_rulerWidget     = new RulerWidget(RightPanelWidget);
+    m_commandWidget   = new CommandWidget(RightPanelWidget);
 
-    RightPanelMainLayout->addWidget(chxwidget);
-    RightPanelMainLayout->addWidget(datatablewidget);
-    RightPanelMainLayout->addWidget(runlerwidget);
-    RightPanelMainLayout->addWidget(commandwidget);
+    RightPanelMainLayout->addWidget(m_channelSelector);
+    RightPanelMainLayout->addWidget(m_statsTable);
+    RightPanelMainLayout->addWidget(m_rulerWidget);
+    RightPanelMainLayout->addWidget(m_commandWidget);
 
     statusLabel = new QLabel("未连接到设备",this);
-    // statusLabel->setFixedSize(200,100);
     statusLabel->setFixedHeight(100);
     statusLabel->setAlignment(Qt::AlignCenter);
     statusLabel->setObjectName("devicestatusLabel");
@@ -354,241 +295,53 @@ void DAQWidget::initRightPanelUI()
     shadowEffect->setBlurRadius(15);
     shadowEffect->setOffset(0);
     statusLabel->setGraphicsEffect(shadowEffect);
-
 }
 
-QWidget *DAQWidget::initchannelWidget()
+/*
+ * 统一的信号连接
+ */
+void DAQWidget::setupConnections()
 {
-    QWidget *ChxWidget = new QWidget(RightPanelWidget);
-    QGridLayout *chLayout = new QGridLayout(ChxWidget);
-    chLayout->setContentsMargins(0,0,0,0);
-    chLayout->setSpacing(5);
+    onConnectSlot();
 
-    for(int i = 0;i < 4;i++)
-    {
-        chxCheckBox[i] = new QCheckBox(QString("CH%1").arg(i + 1),ChxWidget);
-        chLayout->addWidget(chxCheckBox[i],i / 4,i % 4);
+    connect(m_channelSelector, &ChannelSelectorWidget::channelVisibilityChanged,
+            m_statsTable, &DataStatisticsTable::setRowHidden);
 
-        connect(chxCheckBox[i],&QCheckBox::toggled,this,[=](bool checked){
-            if(tableWidget) {
-                tableWidget->setRowHidden(i,!checked);
-            }
-        });
-    }
-
-    chxCheckBox[0]->setChecked(true);
-
-    selectAllCheckBox = new QCheckBox("全选",ChxWidget);
-    chLayout->addWidget(selectAllCheckBox,0,5);
-
-    connect(selectAllCheckBox,&QCheckBox::toggled,this,[=](bool checked){
-
-        for(int i = 0;i < 4;i++)
-        {
-            chxCheckBox[i] ->setChecked(checked);
-        }
-
-    });
-
-    return ChxWidget;
+    connect(m_commandWidget, &CommandWidget::commandSent, this,
+            [=](QString addr, QString data, bool isHex){
+                emit requestSendHardwareCommand(addr, data, isHex);
+            });
 }
 
-QTableWidget *DAQWidget::initDataTableWidget()
-{
-    tableWidget = new QTableWidget(RightPanelWidget);
-
-    // 1. col num and label head
-    tableWidget->setColumnCount(5);
-    tableWidget->setRowCount(4);
-    tableWidget->setHorizontalHeaderLabels({"通道名称", "最大值", "最小值", "平均值", "峰峰值"});
-
-    // 2. row num
-    tableWidget->setRowCount(4);
-
-    // 3. hide row num
-    tableWidget->verticalHeader()->setVisible(false);
-
-    // 4. stretch
-    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    // 5. only read
-    tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    // 6. init table
-    for(int row = 0;row < 4;++row) {
-        tableWidget->setItem(row,0,new QTableWidgetItem(QString("通道%1").arg(row + 1)));
-        tableWidget->item(row, 0)->setTextAlignment(Qt::AlignCenter);
-        for(int col = 1;col < 5;++col) {
-            QTableWidgetItem *item = new QTableWidgetItem("--");
-            item->setTextAlignment(Qt::AlignCenter);
-            tableWidget->setItem(row,col,item);
-        }
-
-        tableWidget->setRowHidden(row, true);
-
-    }
-
-    tableWidget->setObjectName("ChxTable");
-    tableWidget->setStyleSheet("#ChxTable {}");
-
-    // 7. make sure stretch
-    tableWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-    return tableWidget;
-}
-
-QWidget *DAQWidget::initRulerWidget()
-{
-    QWidget *RulerWidget = new QWidget(RightPanelWidget);
-    RulerWidget->setObjectName("rulerwidget");
-    RulerWidget->setAttribute(Qt::WA_StyledBackground,true);
-    RulerWidget->setStyleSheet("#rulerwidget {background-color: 1e1e1e;border: 1px;border-radius: 6px;}");
-    QVBoxLayout *RulerMainLayout = new QVBoxLayout(RulerWidget);
-    RulerMainLayout->setContentsMargins(5,5,5,5);
-    RulerMainLayout->setAlignment(Qt::AlignCenter);
-    RulerMainLayout->setSpacing(5);
-
-    /*-----title-----*/
-    QWidget *RulerTitleWidget = new QWidget(RulerWidget);
-    QHBoxLayout *RulerTitleLayout = new QHBoxLayout(RulerTitleWidget);
-    RulerTitleLayout->setContentsMargins(0,0,0,0);
-    RulerTitleLayout->setAlignment(Qt::AlignCenter);
-    RulerTitleLayout->setSpacing(5);
-
-    QLabel *TitleLabel = new QLabel("测量标尺",RulerTitleWidget);
-    TitleLabel->setObjectName("titlelabel");
-    TitleLabel->setStyleSheet("#titlelabel {color: #000000;font-weight: bold;font-size: 13px;}");
-    QPushButton *addRulerBtn = new QPushButton("+",RulerTitleWidget);
-    addRulerBtn->setObjectName("addrulerbtn");
-    addRulerBtn->setFixedSize(20,20);
-    addRulerBtn->setCursor(Qt::PointingHandCursor);
-    addRulerBtn->setStyleSheet("#addrulerbtn {background-color: #1e8e3e;color: white;border-radius: 10px;font-weight: bold;font-size: 14px;border: none;}"
-                               "#addrulerbtn:hover {background-color: #249e46;}"
-                               "#addrulerbtn:press {background-color: #15652b;}");
-
-    RulerTitleLayout->addWidget(TitleLabel);
-    RulerTitleLayout->addStretch();
-    RulerTitleLayout->addWidget(addRulerBtn);
-
-    /*-----tree list-----*/
-    QTreeWidget *RulerTree = new QTreeWidget(RulerWidget);
-    RulerTree->setObjectName("rulertreewidget");
-    RulerTree->setHeaderHidden(true);
-    RulerTree->setColumnCount(3);
-    RulerTree->setIndentation(15);
-    RulerTree->setStyleSheet("#rulertreewidget {background: transparent;color: #cccccc;border: none;font-size: 12px;}"
-                             "#rulertreewidget:item {height: 28px;}"
-                             "QTreeWidget:item:hover {background-color: #3c3c3c;}");
-    RulerTree->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-
-    /*------assembly----*/
-    RulerMainLayout->addWidget(RulerTitleWidget);
-    RulerMainLayout->addWidget(RulerTree);
-
-    /*-----linked logic (add/delete ruler groups)-----*/
-    connect(addRulerBtn,&QPushButton::clicked,this,[=]() mutable{
-
-        if(groupCount >= 26)
-            return;
-        QString groupName = QString(QChar('A' + groupCount));
-        groupCount++;
-
-        /*-----create root node-----*/
-        QTreeWidgetItem *groupItem = new QTreeWidgetItem(RulerTree);
-        groupItem->setExpanded(true);
-
-    });
-
-    return RulerWidget;
-}
-
-QWidget *DAQWidget::initCommandWidget()
-{
-    QWidget *CommandWidget = new QWidget(RightPanelWidget);
-    QGridLayout *CommandLayout = new QGridLayout(CommandWidget);
-    CommandLayout->setContentsMargins(0,5,0,5);
-    CommandLayout->setSpacing(5);
-
-    QLabel *lblCmd = new QLabel("自定义指令",CommandWidget);
-    QLabel *lblAddr = new QLabel("地址",CommandWidget);
-    QLabel *lblData = new QLabel("数据值(32位)",CommandWidget);
-    QLabel *lblHex = new QLabel("Hex",CommandWidget);
-
-    QString labelStyle = "QLabel {color: #000000;font-size: 12px;font-family:'Microsoft YaHei';font-weight: bold;}";
-    lblCmd->setStyleSheet(labelStyle);
-    lblAddr->setStyleSheet(labelStyle);
-    lblData->setStyleSheet(labelStyle);
-    lblHex->setStyleSheet(labelStyle);
-
-    QPushButton *btnSend = new QPushButton("发送",CommandWidget);
-    QLineEdit *editAddr = new QLineEdit("04",CommandWidget);
-    editAddr->setAlignment(Qt::AlignCenter);
-    QLineEdit *editData = new QLineEdit("00 00 0B 04",CommandWidget);
-    editData->setAlignment(Qt::AlignCenter);
-    QCheckBox *chkHex = new QCheckBox(CommandWidget);
-    chkHex->setChecked(true);
-
-    CommandLayout->addWidget(lblCmd,0,0);
-    CommandLayout->addWidget(lblAddr,0,1);
-    CommandLayout->addWidget(lblData,0,2);
-    CommandLayout->addWidget(lblHex,0,3);
-
-    CommandLayout->addWidget(btnSend,1,0);
-    CommandLayout->addWidget(editAddr,1,1);
-    CommandLayout->addWidget(editData,1,2);
-    CommandLayout->addWidget(chkHex,1,3);
-
-    return CommandWidget;
-}
-
-  /*-------------------------------------------------------------------------------------------------------------------------------------*/
+/*
+ * 悬停特效
+ */
 bool DAQWidget::eventFilter(QObject *watched, QEvent *event)
 {
-
     if(watched == statusLabel) {
-
-        // 1. enter
         if(event->type() == QEvent::Enter) {
-
             statusLabel->setStyleSheet(
                 "#devicestatusLabel {background-color: #1e3a5f; color: #ffffff; border: 1px solid #00aaff; border-radius: 4px; font-size: 12px; font-weight: bold;}"
                 );
-
             shadowEffect->setColor(QColor(0,170,255,180));
             shadowEffect->setBlurRadius(15);
-
         }else if(event->type() == QEvent::Leave) {
-
             statusLabel->setStyleSheet(
                 "#devicestatusLabel {background-color: #2b2b2b; color: #aaaaaa; border: 1px solid #444; border-radius: 4px; font-size: 12px;}"
                 );
-
             shadowEffect->setColor(QColor(0,150,255,0));
             shadowEffect->setBlurRadius(15);
-
         }else if(event->type() == QEvent::MouseButtonPress) {
-
             statusLabel->setStyleSheet(
-                "#devicestatusLabel { background-color: #14273f; color: #cccccc; border: 1px solid #0077cc; border-radius: 4px; font-size: 12px; }");
-
-
+                "#devicestatusLabel { background-color: #14273f; color: #cccccc; border: 1px solid #0077cc; border-radius: 4px; font-size: 12px; }"
+                );
         }else if(event->type() == QEvent::MouseButtonRelease) {
-
             statusLabel->setStyleSheet(
                 "#devicestatusLabel {background-color: #1e3a5f; color: #ffffff; border: 1px solid #00aaff; border-radius: 4px; font-size: 12px; font-weight: bold;}"
                 );
-
             emit SelectDeviceClicked();
-
             return true;
-
         }
-
     }
-
     return QWidget::eventFilter(watched,event);
-
 }
-
-

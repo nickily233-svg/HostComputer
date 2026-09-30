@@ -15,8 +15,6 @@
 #include <QProgressBar>
 #include <QDoubleSpinBox>
 #include <QTableWidget>
-#include <complex>
-#include <cmath>
 #include <QTimer>
 #include <QPen>
 #include <QGraphicsDropShadowEffect>
@@ -26,8 +24,10 @@
 #include <QHeaderView>
 #include <QLineEdit>
 
-#include "ui_utils/ui_utils.h"
-// #include "src/ui/mainwindow.h"
+#include "src/widgets/ruler_widget.h"
+#include "src/widgets/command_widget.h"
+#include "src/widgets/channel_selector.h"
+#include "src/widgets/data_statistics_table.h"
 #include "qcustomplot.h"
 
 #ifndef CHANNEL_COUNT
@@ -36,7 +36,6 @@
 
 class DAQWidget : public QWidget
 {
-
     Q_OBJECT
 
 public:
@@ -44,8 +43,7 @@ public:
     ~DAQWidget();
 
 protected:
-    // event Filter : capture mouse float action
-    bool eventFilter(QObject *wtched,QEvent *event) override;
+    bool eventFilter(QObject *wtched, QEvent *event) override;
 
 private:
     void initUI();
@@ -53,9 +51,8 @@ private:
     void initRightBar();
     void initWaveArea();
     void initBottomStatusBar();
-
+    void setupConnections();
     void ShowWaveLegend();
-
     void onConnectSlot();
 
     QHBoxLayout *TopBarHLayout;
@@ -92,7 +89,6 @@ private:
     QButtonGroup *exclusiveGroup;
 
     QCustomPlot *WavePlot;
-
     QTimer *WaveTimer;
 
     QLabel *ADCLabel;
@@ -103,26 +99,17 @@ private:
 
     QStringList ChxList = {"通道1","通道2","通道3","通道4"};
 
-    /* ----------------------------------------------------------------------------------------------------------------------------------*/
+    /*-----ptr-----*/
     void initRightPanelUI();
 
-    QWidget *initchannelWidget();
-    QTableWidget *initDataTableWidget();
-    QWidget *initRulerWidget();
-    QWidget *initCommandWidget();
-
-    QWidget *channelWidget;
-    QTableWidget *tableWidget;
-    QWidget *rulerWidget;
-    QWidget *commadWidget;
-
-    QCheckBox *chxCheckBox[CHANNEL_COUNT];
-    QCheckBox *selectAllCheckBox;
+    ChannelSelectorWidget *m_channelSelector;
+    DataStatisticsTable   *m_statsTable;
+    RulerWidget           *m_rulerWidget;
+    CommandWidget         *m_commandWidget;
 
     QVBoxLayout *RightPanelMainLayout;
 
     QLabel *statusLabel;
-
     QGraphicsDropShadowEffect *shadowEffect;
 
     /*-----variable-----*/
@@ -141,11 +128,9 @@ private:
         Qt::darkCyan
     };
 
-    int groupCount = 0;
-
-signals :
+signals:
     void SelectDeviceClicked();
-
+    void requestSendHardwareCommand(QString addr, QString data, bool isHex);
 };
 
 #endif // DAQ_PAGE_H

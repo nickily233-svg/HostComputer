@@ -2,47 +2,42 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QVBoxLayout>
-#include <QList>
-#include <QListWidget>
-#include <QPushButton>
-#include <QLabel>
 #include <QTabWidget>
+#include <QMenu>
+#include <QAction>
 
-#include "src/ui/common_widgets.h"
-#include "src/ui/daq_page.h"
-#include "src/ui/galvo_page.h"
+// 页面类
+#include "src/pages/daq_page.h"
+#include "src/pages/galvo_page.h"
 
 class MainWindow : public QMainWindow
 {
-
     Q_OBJECT
 
-public :
+public:
     explicit MainWindow(QMainWindow *parent = nullptr);
     ~MainWindow();
-protected :
 
-private :
-    /* external page class */
-    DAQWidget *daq_page;
-    GalvoWidget *Galvo_page;
-
-    /* init */
+private:
     void initUI();
     void setupMenuBar();
     void setupConnect();
 
-    /* slot func */
+    // 槽函数
     void onAboutTriggered();
     void onSelectDeviceTriggered();
     void onExitTriggered();
 
-    /* ptr */
+    // 页面指针
+    DAQWidget *daq_page;
+    GalvoWidget *Galvo_page;
+
+    // 菜单栏指针
     QMenu *MenuDevice;
     QMenu *MenuFile;
     QMenu *MenuAbout;
 
+    // 动作指针
     QAction *ActSelect;
     QAction *ActOpenADC;
     QAction *ActOpen;

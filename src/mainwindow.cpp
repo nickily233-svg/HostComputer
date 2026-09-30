@@ -1,28 +1,22 @@
-#include "src/ui/mainwindow.h"
-
+#include "src/mainwindow.h"
 #include <QMenuBar>
-#include <QMenu>
-#include <QAction>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QDialog>
 
-/*
- * 构造函数
- */
+// ⭐ 引入刚才解耦的独立组件
+#include "src/dialog/deviceselectdialog.h"
+
 MainWindow::MainWindow(QMainWindow *parent)
-    :QMainWindow(parent)
+    : QMainWindow(parent)
 {
-    setMinimumSize(1280,800);
+    setMinimumSize(1280, 800);
     this->setWindowTitle("多功能数据采集仪 -- NEFU -- LiuYang");
     initUI();
 }
 
-/*
- * 析构函数
- */
 MainWindow::~MainWindow()
 {
-
 }
 
 /*
@@ -30,7 +24,6 @@ MainWindow::~MainWindow()
  */
 void MainWindow::initUI()
 {
-
     setupMenuBar();
 
     QTabWidget *tabWidget = new QTabWidget(this);
@@ -38,13 +31,12 @@ void MainWindow::initUI()
     daq_page = new DAQWidget(tabWidget);
     Galvo_page = new GalvoWidget(tabWidget);
 
-    tabWidget->addTab(daq_page,"数据采集");
-    tabWidget->addTab(Galvo_page,"振镜控制");
+    tabWidget->addTab(daq_page, "数据采集");
+    tabWidget->addTab(Galvo_page, "振镜控制");
 
     this->setCentralWidget(tabWidget);
 
     setupConnect();
-
 }
 
 /*
@@ -58,19 +50,19 @@ void MainWindow::setupMenuBar()
     MenuFile = MenuBar->addMenu("文件");
     MenuAbout = MenuBar->addMenu("关于");
 
-    ActSelect = new QAction("选择设备",this);
-    ActOpenADC = new QAction("打开ADC",this);
-    ActOpen = new QAction("打开设备",this);
+    ActSelect = new QAction("选择设备", this);
+    ActOpenADC = new QAction("打开ADC", this);
+    ActOpen = new QAction("打开设备", this);
 
-    ActImportDateFile = new QAction("导入数据文件",this);
-    ActSaveDateFile = new QAction("保存数据文件",this);
-    ActExportCSVFile = new QAction("导出CSV文件",this);
-    ActExit = new QAction("退出",this);
+    ActImportDateFile = new QAction("导入数据文件", this);
+    ActSaveDateFile = new QAction("保存数据文件", this);
+    ActExportCSVFile = new QAction("导出CSV文件", this);
+    ActExit = new QAction("退出", this);
 
-    ActSoftwareIntoduction = new QAction("软件介绍",this);
-    ActCheckUpdate = new QAction("检查更新",this);
-    ActFeedbackAndAdvice = new QAction("反馈建议",this);
-    ActInstructionsAndHelp = new QAction("使用说明/帮助",this);
+    ActSoftwareIntoduction = new QAction("软件介绍", this);
+    ActCheckUpdate = new QAction("检查更新", this);
+    ActFeedbackAndAdvice = new QAction("反馈建议", this);
+    ActInstructionsAndHelp = new QAction("使用说明/帮助", this);
 
     MenuDevice->addAction(ActSelect);
     MenuDevice->addAction(ActOpenADC);
@@ -92,21 +84,19 @@ void MainWindow::setupMenuBar()
  */
 void MainWindow::setupConnect()
 {
-
-    connect(ActSoftwareIntoduction,&QAction::triggered,this,[=](){
+    connect(ActSoftwareIntoduction, &QAction::triggered, this, [=](){
         QMessageBox *MsgBox = new QMessageBox(this);
-        MsgBox->setMinimumSize(400,300);
+        MsgBox->setMinimumSize(400, 300);
         MsgBox->setWindowTitle("关于");
         MsgBox->setText("多功能数据采集仪\n 版本:2026/9/27 \n 开发者: NEFU LiuYang");
         MsgBox->show();
     });
 
-    connect(ActExit,&QAction::triggered,this,&MainWindow::onExitTriggered);
+    connect(ActExit, &QAction::triggered, this, &MainWindow::onExitTriggered);
+    connect(ActSelect, &QAction::triggered, this, &MainWindow::onSelectDeviceTriggered);
 
-    connect(ActSelect,&QAction::triggered,this,&MainWindow::onSelectDeviceTriggered);
-
-    connect(this->daq_page,&DAQWidget::SelectDeviceClicked,this,&MainWindow::onSelectDeviceTriggered);
-
+    // 接收 DAQWidget 发出的选择设备信号
+    connect(this->daq_page, &DAQWidget::SelectDeviceClicked, this, &MainWindow::onSelectDeviceTriggered);
 }
 
 /*
@@ -114,10 +104,8 @@ void MainWindow::setupConnect()
  */
 void MainWindow::onAboutTriggered()
 {
-
     QString dataStr = QDateTime::currentDateTime().toString("yyyy/MM/dd");
     QString AboutStr = QString("多功能数据采集仪\n版本:%1\n开发者:NEFU LiuYang").arg(dataStr);
-
 }
 
 /*
@@ -133,35 +121,14 @@ void MainWindow::onExitTriggered()
  */
 void MainWindow::onSelectDeviceTriggered()
 {
-    QDialog *SelectDialog = new QDialog(this);
+    // ⭐ 改为直接调用独立组件，代码极其清爽
+    DeviceSelectDialog dialog(this);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(SelectDialog);
-
-    SelectDialog->setWindowTitle("选择设备");
-    SelectDialog->setFixedSize(400,300);
-
-    QLabel *SelectDevicelabel = new QLabel("请选择要连接的设备",SelectDialog);
-    SelectDevicelabel->setAlignment(Qt::AlignCenter);
-    QListWidget *deviceList = new QListWidget(SelectDialog);
-    deviceList->addItem("SimDevice");
-
-    QPushButton *btnConnect = new QPushButton("Connect",SelectDialog);
-    btnConnect->setFixedWidth(120);
-    QPushButton *btnCancel = new QPushButton("Cancel",SelectDialog);
-    btnCancel->setFixedWidth(120);
-
-    QHBoxLayout *btnLayout = new QHBoxLayout();
-    btnLayout->addStretch();
-    btnLayout->addWidget(btnConnect);
-    btnLayout->addWidget(btnCancel);
-    btnLayout->addStretch();
-
-    mainLayout->addWidget(SelectDevicelabel);
-    mainLayout->addWidget(deviceList);
-    mainLayout->addLayout(btnLayout);
-
-    SelectDialog->setAttribute(Qt::WA_DeleteOnClose);
-    SelectDialog->exec();
+    if (dialog.exec() == QDialog::Accepted) {
+        QString selectedDevice = dialog.getSelectedDevice();
+        if (!selectedDevice.isEmpty()) {
+            // TODO: 这里可以处理设备连接后的逻辑，比如更新界面状态
+            qDebug() << "用户选择了设备：" << selectedDevice;
+        }
+    }
 }
-
-
