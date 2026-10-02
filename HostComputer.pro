@@ -12,6 +12,7 @@ SOURCES += \
     src/core/galvo/galvo_data_types.cpp \
     src/core/galvo/galvo_protocol.cpp \
     src/core/ringbuffer/ringbuffer.cpp \
+    src/dialog/adcselect.cpp \
     src/dialog/deviceselectdialog.cpp \
     src/drivers/udp_client.cpp \
     src/drivers/xdma_driver.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     src/core/galvo_data_types.h \
     src/core/galvo_protocol.h \
     src/core/ringbuffer/ringbuffer.h \
+    src/dialog/adcselect.h \
     src/dialog/deviceselectdialog.h \
     src/drivers/idevice.h \
     src/drivers/udp_client.h \
