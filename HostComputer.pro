@@ -21,9 +21,11 @@ SOURCES += \
     src/pages/galvo_page.cpp \
     src/ui/common_widgets.cpp \
     src/utils/ui_utils.cpp \
+    src/widgets/centerGalvoPosPanel.cpp \
     src/widgets/channel_selector.cpp \
     src/widgets/command_widget.cpp \
     src/widgets/data_statistics_table.cpp \
+    src/widgets/rightPanelLog.cpp \
     src/widgets/ruler_widget.cpp \
     src/widgets/xy_control_widget.cpp \
     third_party/qcustomplot.cpp \
@@ -47,9 +49,11 @@ HEADERS += \
     src/pages/galvo_page.h \
     src/ui/common_widgets.h \
     src/utils/ui_utils.h \
+    src/widgets/centerGalvoPosPanel.h \
     src/widgets/channel_selector.h \
     src/widgets/command_widget.h \
     src/widgets/data_statistics_table.h \
+    src/widgets/rightPanelLog.h \
     src/widgets/ruler_widget.h \
     src/widgets/xy_control_widget.h \
     third_party/qcustomplot.h \
@@ -63,6 +67,9 @@ LIBS += -lopengl32 -lglu32
 
 QMAKE_PROJECT_DEPTH = 0
 QMAKE_CXXFLAGS += /utf-8
+
+# QMAKE_CXXFLAGS += -fsanitize=address
+# QMAKE_LFLAGS += -fsanitize=address
 
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
