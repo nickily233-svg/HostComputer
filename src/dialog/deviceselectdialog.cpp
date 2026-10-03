@@ -1,9 +1,10 @@
 #include "src/dialog/deviceselectdialog.h"
 
-DeviceSelectDialog::DeviceSelectDialog(QWidget *parent) : QDialog(parent)
+DeviceSelectDialog::DeviceSelectDialog(QWidget *parent)
+    : QDialog(parent)
 {
     setWindowTitle("选择设备");
-    setFixedSize(400, 300);
+    setFixedSize(400,300);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
@@ -31,6 +32,13 @@ DeviceSelectDialog::DeviceSelectDialog(QWidget *parent) : QDialog(parent)
     // 连接按钮
     connect(btnConnect, &QPushButton::clicked, this, &QDialog::accept);
     connect(btnCancel, &QPushButton::clicked, this, &QDialog::reject);
+}
+
+DeviceSelectDialog::~DeviceSelectDialog()
+{
+
+
+
 }
 
 QString DeviceSelectDialog::getSelectedDevice() const

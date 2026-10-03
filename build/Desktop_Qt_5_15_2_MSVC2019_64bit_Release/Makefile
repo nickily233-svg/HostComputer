@@ -268,6 +268,7 @@ Makefile: D:\QTProject\HostComputer\HostComputer.pro D:\Qt\5.15.2\msvc2019_64\mk
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\qtmain.prl \
 		D:\Qt\5.15.2\msvc2019_64\mkspecs\features\build_pass.prf \
+		D:\QTProject\HostComputer\res.qrc \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5PrintSupportd.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5OpenGLd.prl \
 		D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.prl \
@@ -460,6 +461,7 @@ D:\Qt\5.15.2\msvc2019_64\lib\Qt5SerialPort.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\qtmain.prl:
 D:\Qt\5.15.2\msvc2019_64\mkspecs\features\build_pass.prf:
+D:\QTProject\HostComputer\res.qrc:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5PrintSupportd.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5OpenGLd.prl:
 D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.prl:

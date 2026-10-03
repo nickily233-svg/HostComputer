@@ -130,6 +130,7 @@ private:
 
 signals:
     void SelectDeviceClicked();
+    void SelectADCClicked();
     void requestSendHardwareCommand(QString addr, QString data, bool isHex);
 };
 

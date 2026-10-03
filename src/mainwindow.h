@@ -5,10 +5,14 @@
 #include <QTabWidget>
 #include <QMenu>
 #include <QAction>
+#include <QIcon>
 
 // 页面类
 #include "src/pages/daq_page.h"
 #include "src/pages/galvo_page.h"
+// Dialog
+#include "src/dialog/deviceselectdialog.h"
+#include "SRC/dialog/adcselect.h"
 
 class MainWindow : public QMainWindow
 {
@@ -27,10 +31,15 @@ private:
     void onAboutTriggered();
     void onSelectDeviceTriggered();
     void onExitTriggered();
+    void onSelectADCTriggered();
 
     // 页面指针
     DAQWidget *daq_page;
     GalvoWidget *Galvo_page;
+
+    // Dialog
+    DeviceSelectDialog *selectdevicedialog;
+    ADCSelectDialog *selectadcdialog;
 
     // 菜单栏指针
     QMenu *MenuDevice;

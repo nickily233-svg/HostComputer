@@ -11,9 +11,12 @@
 class DeviceSelectDialog : public QDialog
 {
     Q_OBJECT
+
 public:
     explicit DeviceSelectDialog(QWidget *parent = nullptr);
+    ~DeviceSelectDialog();
 
+public slots:
     QString getSelectedDevice() const;
 
 private:

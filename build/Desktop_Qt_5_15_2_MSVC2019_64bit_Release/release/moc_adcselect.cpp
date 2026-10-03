@@ -1,5 +1,5 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'deviceselectdialog.h'
+** Meta object code from reading C++ file 'adcselect.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.15.2)
 **
@@ -7,11 +7,11 @@
 *****************************************************************************/
 
 #include <memory>
-#include "../../../src/dialog/deviceselectdialog.h"
+#include "../../../src/dialog/adcselect.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'deviceselectdialog.h' doesn't include <QObject>."
+#error "The header file 'adcselect.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.15.2. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -21,28 +21,28 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_DeviceSelectDialog_t {
+struct qt_meta_stringdata_ADCSelectDialog_t {
     QByteArrayData data[3];
-    char stringdata0[38];
+    char stringdata0[37];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_DeviceSelectDialog_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_ADCSelectDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_DeviceSelectDialog_t qt_meta_stringdata_DeviceSelectDialog = {
+static const qt_meta_stringdata_ADCSelectDialog_t qt_meta_stringdata_ADCSelectDialog = {
     {
-QT_MOC_LITERAL(0, 0, 18), // "DeviceSelectDialog"
-QT_MOC_LITERAL(1, 19, 17), // "getSelectedDevice"
-QT_MOC_LITERAL(2, 37, 0) // ""
+QT_MOC_LITERAL(0, 0, 15), // "ADCSelectDialog"
+QT_MOC_LITERAL(1, 16, 19), // "onSelectADCCahenged"
+QT_MOC_LITERAL(2, 36, 0) // ""
 
     },
-    "DeviceSelectDialog\0getSelectedDevice\0"
+    "ADCSelectDialog\0onSelectADCCahenged\0"
     ""
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_DeviceSelectDialog[] = {
+static const uint qt_meta_data_ADCSelectDialog[] = {
 
  // content:
        8,       // revision
@@ -53,54 +53,63 @@ static const uint qt_meta_data_DeviceSelectDialog[] = {
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
 
- // slots: name, argc, parameters, tag, flags
-       1,    0,   19,    2, 0x0a /* Public */,
+ // signals: name, argc, parameters, tag, flags
+       1,    0,   19,    2, 0x06 /* Public */,
 
- // slots: parameters
-    QMetaType::QString,
+ // signals: parameters
+    QMetaType::Void,
 
        0        // eod
 };
 
-void DeviceSelectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void ADCSelectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<DeviceSelectDialog *>(_o);
+        auto *_t = static_cast<ADCSelectDialog *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: { QString _r = _t->getSelectedDevice();
-            if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
+        case 0: _t->onSelectADCCahenged(); break;
         default: ;
         }
+    } else if (_c == QMetaObject::IndexOfMethod) {
+        int *result = reinterpret_cast<int *>(_a[0]);
+        {
+            using _t = void (ADCSelectDialog::*)();
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ADCSelectDialog::onSelectADCCahenged)) {
+                *result = 0;
+                return;
+            }
+        }
     }
+    Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject DeviceSelectDialog::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject ADCSelectDialog::staticMetaObject = { {
     QMetaObject::SuperData::link<QDialog::staticMetaObject>(),
-    qt_meta_stringdata_DeviceSelectDialog.data,
-    qt_meta_data_DeviceSelectDialog,
+    qt_meta_stringdata_ADCSelectDialog.data,
+    qt_meta_data_ADCSelectDialog,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *DeviceSelectDialog::metaObject() const
+const QMetaObject *ADCSelectDialog::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *DeviceSelectDialog::qt_metacast(const char *_clname)
+void *ADCSelectDialog::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_DeviceSelectDialog.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_ADCSelectDialog.stringdata0))
         return static_cast<void*>(this);
     return QDialog::qt_metacast(_clname);
 }
 
-int DeviceSelectDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int ADCSelectDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QDialog::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -115,6 +124,12 @@ int DeviceSelectDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         _id -= 1;
     }
     return _id;
+}
+
+// SIGNAL 0
+void ADCSelectDialog::onSelectADCCahenged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

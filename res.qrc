@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>res/NEFUIcon.png</file>
+        <file>res/NEFUIcon.ico</file>
+    </qresource>
+</RCC>

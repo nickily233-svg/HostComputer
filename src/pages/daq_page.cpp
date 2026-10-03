@@ -236,6 +236,10 @@ void DAQWidget::onConnectSlot()
         emit SelectDeviceClicked();
     });
 
+    connect(SelectADCBtn,&QPushButton::clicked,this,[=](){
+        emit SelectADCClicked();
+    });
+
     /*-----init status-----*/
     if(DragWaveFormCheckBox->isChecked()) {
         WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);

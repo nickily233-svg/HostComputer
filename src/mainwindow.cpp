@@ -4,14 +4,12 @@
 #include <QDateTime>
 #include <QDialog>
 
-// ⭐ 引入刚才解耦的独立组件
-#include "src/dialog/deviceselectdialog.h"
-
 MainWindow::MainWindow(QMainWindow *parent)
     : QMainWindow(parent)
 {
     setMinimumSize(1280, 800);
     this->setWindowTitle("多功能数据采集仪 -- NEFU -- LiuYang");
+    this->setWindowIcon(QIcon(":/icons/res/NEFUIcon.ico"));
     initUI();
 }
 
@@ -97,6 +95,7 @@ void MainWindow::setupConnect()
 
     // 接收 DAQWidget 发出的选择设备信号
     connect(this->daq_page, &DAQWidget::SelectDeviceClicked, this, &MainWindow::onSelectDeviceTriggered);
+    connect(this->daq_page,&DAQWidget::SelectADCClicked,this,&MainWindow::onSelectADCTriggered);
 }
 
 /*
@@ -121,14 +120,27 @@ void MainWindow::onExitTriggered()
  */
 void MainWindow::onSelectDeviceTriggered()
 {
-    // ⭐ 改为直接调用独立组件，代码极其清爽
-    DeviceSelectDialog dialog(this);
 
-    if (dialog.exec() == QDialog::Accepted) {
-        QString selectedDevice = dialog.getSelectedDevice();
+    selectdevicedialog = new DeviceSelectDialog(this);
+
+    if (selectdevicedialog->exec() == QDialog::Accepted) {
+        QString selectedDevice = selectdevicedialog->getSelectedDevice();
         if (!selectedDevice.isEmpty()) {
-            // TODO: 这里可以处理设备连接后的逻辑，比如更新界面状态
             qDebug() << "用户选择了设备：" << selectedDevice;
         }
+    }
+}
+
+void MainWindow::onSelectADCTriggered()
+{
+    selectadcdialog = new ADCSelectDialog(this);
+
+    if(selectadcdialog->exec() == QDialog::Accepted) {
+        QString selectedADC = selectadcdialog->getSelectADC();
+
+        if (!selectedADC.isEmpty()) {
+            qDebug() << "用户选择了ADC: " << selectedADC;
+        }
+
     }
 }
