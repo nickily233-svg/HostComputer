@@ -7,6 +7,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/core/daq/DaqCsvSaver.cpp \
     src/core/daq/daq_data_model.cpp \
     src/core/galvo/galvo_controller.cpp \
     src/core/galvo/galvo_data_types.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
     src/widgets/xy_control_widget.cpp
 
 HEADERS += \
+    src/core/daq/DaqCsvSaver.h \
     src/core/daq/daq_data_model.h \
     src/core/galvo/galvo_controller.h \
     src/core/galvo/galvo_data_types.h \
