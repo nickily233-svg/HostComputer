@@ -15,6 +15,7 @@ SOURCES += \
     src/core/ringbuffer/ringbuffer.cpp \
     src/dialog/adcselect.cpp \
     src/dialog/deviceselectdialog.cpp \
+    src/drivers/mock_device.cpp \
     src/drivers/udp_client.cpp \
     src/drivers/xdma_driver.cpp \
     src/main.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     src/dialog/adcselect.h \
     src/dialog/deviceselectdialog.h \
     src/drivers/idevice.h \
+    src/drivers/mock_device.h \
     src/drivers/udp_client.h \
     src/drivers/xdma_driver.h \
     src/mainwindow.h \

@@ -54,7 +54,7 @@ void MainWindow::setupMenuBar()
 
     ActImportDateFile = new QAction("导入数据文件", this);
     ActSaveDateFile = new QAction("保存数据文件", this);
-    ActExportCSVFile = new QAction("导出CSV文件", this);
+    ActExportFile = new QAction("导出文件", this);
     ActExit = new QAction("退出", this);
 
     ActSoftwareIntoduction = new QAction("软件介绍", this);
@@ -68,7 +68,7 @@ void MainWindow::setupMenuBar()
 
     MenuFile->addAction(ActImportDateFile);
     MenuFile->addAction(ActSaveDateFile);
-    MenuFile->addAction(ActExportCSVFile);
+    MenuFile->addAction(ActExportFile);
     MenuFile->addAction(ActExit);
 
     MenuAbout->addAction(ActSoftwareIntoduction);

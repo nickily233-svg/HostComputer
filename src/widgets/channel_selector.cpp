@@ -11,13 +11,12 @@ ChannelSelectorWidget::ChannelSelectorWidget(QWidget *parent) : QWidget(parent)
         chxCheckBox[i] = new QCheckBox(QString("CH%1").arg(i + 1),this);
         chLayout->addWidget(chxCheckBox[i],i / 4,i % 4);
 
-        connect(chxCheckBox[i],&QCheckBox::toggled,this,[=](bool checked){
+        connect(chxCheckBox[i],&QCheckBox::toggled,this,[this,i](bool checked){
             emit channelVisibilityChanged(i, checked);
         });
     }
 
     chxCheckBox[0]->setChecked(true);
-
     selectAllCheckBox = new QCheckBox("全选",this);
     chLayout->addWidget(selectAllCheckBox,0,5);
 

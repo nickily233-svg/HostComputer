@@ -69,8 +69,8 @@ void DAQWidget::initTopBar()
     OpenDeviceBtn->setToolTip("<b>打开设备</b>");
     SaveDataFileBtn = new QPushButton("保存数据文件(可被导入)",topBarWidget);
     SaveDataFileBtn->setToolTip("<b>保存数据文件(可被导入)</b>");
-    ExportCSVFileBtn = new QPushButton("导出CSV文件",topBarWidget);
-    ExportCSVFileBtn->setToolTip("<b>导出CSV文件</b>");
+    ExportFileBtn = new QPushButton("导出文件",topBarWidget);
+    ExportFileBtn->setToolTip("<b>导出文件</b>");
     ImportDataFileBtn = new QPushButton("导入数据文件",topBarWidget);
     ImportDataFileBtn->setToolTip("<b>导入数据文件</b>");
 
@@ -106,7 +106,7 @@ void DAQWidget::initTopBar()
     topBarLayout->addWidget(SelectADCBtn);
     topBarLayout->addWidget(OpenDeviceBtn);
     topBarLayout->addWidget(SaveDataFileBtn);
-    topBarLayout->addWidget(ExportCSVFileBtn);
+    topBarLayout->addWidget(ExportFileBtn);
     topBarLayout->addWidget(ImportDataFileBtn);
 
     topBarLayout->addWidget(SampleRate);
@@ -164,8 +164,8 @@ void DAQWidget::initWaveArea()
 
     WavePlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
 
-    WavePlot->xAxis->setLabel(" X 轴 ");
-    WavePlot->yAxis->setLabel(" Y 轴 ");
+    WavePlot->xAxis->setLabel("X 轴");
+    WavePlot->yAxis->setLabel("Y 轴");
     WavePlot->xAxis->setLabelFont(QFont("Microsoft YaHei",9));
     WavePlot->yAxis->setLabelFont(QFont("Microsoft YaHei",9));
 
@@ -198,52 +198,6 @@ void DAQWidget::initBottomStatusBar()
     BottomStatusLayout->addWidget(percentLabel);
 
     BottomStatusLayout->addStretch();
-}
-
-/*
- * 连接槽函数
- */
-void DAQWidget::onConnectSlot()
-{
-    connect(DragWaveFormCheckBox,&QCheckBox::toggled,this,[=](bool checked){
-        if (checked) {
-            WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
-            WavePlot->setSelectionRectMode(QCP::srmNone);
-        } else {
-            WavePlot->setInteractions(QCP::iNone);
-            WavePlot->setSelectionRectMode(QCP::srmNone);
-        }
-    });
-
-    connect(ZoomAreaCheckBox, &QCheckBox::toggled, this, [=](bool checked){
-        if (checked) {
-            WavePlot->setInteractions(QCP::iNone);
-            WavePlot->setSelectionRectMode(QCP::srmZoom);
-            WavePlot->selectionRect()->setPen(QPen(Qt::blue, 1, Qt::DashLine));
-            WavePlot->selectionRect()->setBrush(QBrush(QColor(0, 170, 255, 50)));
-        } else {
-            WavePlot->setSelectionRectMode(QCP::srmNone);
-            WavePlot->setInteractions(QCP::iNone);
-        }
-    });
-
-    connect(edgeTypeBtn,&QPushButton::clicked,this,[=](){
-        currentEdgeIndex = (currentEdgeIndex + 1) % edgeTypeList.size();
-        edgeTypeBtn->setText(edgeTypeList[currentEdgeIndex]);
-    });
-
-    connect(SelectDeviceBtn,&QPushButton::clicked,this,[=](){
-        emit SelectDeviceClicked();
-    });
-
-    connect(SelectADCBtn,&QPushButton::clicked,this,[=](){
-        emit SelectADCClicked();
-    });
-
-    /*-----init status-----*/
-    if(DragWaveFormCheckBox->isChecked()) {
-        WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
-    }
 }
 
 void DAQWidget::ShowWaveLegend()
@@ -306,15 +260,55 @@ void DAQWidget::initRightPanelUI()
  */
 void DAQWidget::setupConnections()
 {
-    onConnectSlot();
+    connect(DragWaveFormCheckBox,&QCheckBox::toggled,this,[=](bool checked){
+        if (checked) {
+            WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
+            WavePlot->setSelectionRectMode(QCP::srmNone);
+        } else {
+            WavePlot->setInteractions(QCP::iNone);
+            WavePlot->setSelectionRectMode(QCP::srmNone);
+        }
+    });
 
-    connect(m_channelSelector, &ChannelSelectorWidget::channelVisibilityChanged,
-            m_statsTable, &DataStatisticsTable::setRowHidden);
+    connect(ZoomAreaCheckBox, &QCheckBox::toggled, this, [=](bool checked){
+        if (checked) {
+            WavePlot->setInteractions(QCP::iNone);
+            WavePlot->setSelectionRectMode(QCP::srmZoom);
+            WavePlot->selectionRect()->setPen(QPen(Qt::blue, 1, Qt::DashLine));
+            WavePlot->selectionRect()->setBrush(QBrush(QColor(0, 170, 255, 50)));
+        } else {
+            WavePlot->setSelectionRectMode(QCP::srmNone);
+            WavePlot->setInteractions(QCP::iNone);
+        }
+    });
+
+    connect(edgeTypeBtn,&QPushButton::clicked,this,[=](){
+        currentEdgeIndex = (currentEdgeIndex + 1) % edgeTypeList.size();
+        edgeTypeBtn->setText(edgeTypeList[currentEdgeIndex]);
+    });
+
+    connect(SelectDeviceBtn,&QPushButton::clicked,this,[=](){
+        emit SelectDeviceClicked();
+    });
+
+    connect(SelectADCBtn,&QPushButton::clicked,this,[=](){
+        emit SelectADCClicked();
+    });
+
+    if(DragWaveFormCheckBox->isChecked()) {
+        WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
+    }
+
+    connect(m_channelSelector, &ChannelSelectorWidget::channelVisibilityChanged,this,[=](int row,bool checked){
+        m_statsTable->setRowHidden(row,!checked);
+    });
 
     connect(m_commandWidget, &CommandWidget::commandSent, this,
-            [=](QString addr, QString data, bool isHex){
-                emit requestSendHardwareCommand(addr, data, isHex);
-            });
+        [=](QString addr, QString data, bool isHex){
+            emit requestSendHardwareCommand(addr, data, isHex);
+    });
+
+    m_statsTable->setRowHidden(0,false);
 }
 
 /*

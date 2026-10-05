@@ -53,7 +53,6 @@ private:
     void initBottomStatusBar();
     void setupConnections();
     void ShowWaveLegend();
-    void onConnectSlot();
 
     QHBoxLayout *TopBarHLayout;
 
@@ -66,7 +65,7 @@ private:
     QPushButton *SelectADCBtn;
     QPushButton *OpenDeviceBtn;
     QPushButton *SaveDataFileBtn;
-    QPushButton *ExportCSVFileBtn;
+    QPushButton *ExportFileBtn;
     QPushButton *ImportDataFileBtn;
 
     QLabel *SampleRate;

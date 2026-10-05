@@ -52,7 +52,7 @@ private:
     QAction *ActOpen;
     QAction *ActImportDateFile;
     QAction *ActSaveDateFile;
-    QAction *ActExportCSVFile;
+    QAction *ActExportFile;
     QAction *ActExit;
     QAction *ActSoftwareIntoduction;
     QAction *ActCheckUpdate;
