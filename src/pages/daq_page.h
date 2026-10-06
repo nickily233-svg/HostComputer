@@ -23,12 +23,16 @@
 #include <QScrollArea>
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QThread>
 
 #include "src/widgets/ruler_widget.h"
 #include "src/widgets/command_widget.h"
 #include "src/widgets/channel_selector.h"
 #include "src/widgets/data_statistics_table.h"
 #include "qcustomplot.h"
+#include "src/drivers/idevice.h"
+#include "src/drivers/mock_device.h"
+#include "src/drivers/daq_worker.h"
 
 #ifndef CHANNEL_COUNT
 #define CHANNEL_COUNT 4
@@ -41,6 +45,10 @@ class DAQWidget : public QWidget
 public:
     explicit DAQWidget(QWidget *parent = nullptr);
     ~DAQWidget();
+
+private slots:
+    void onDataReady(const QByteArray &rawData,quint64 bytesRead);
+    void onStatusUpdated(const DAQStatus &status);
 
 protected:
     bool eventFilter(QObject *wtched, QEvent *event) override;
@@ -101,10 +109,10 @@ private:
     /*-----ptr-----*/
     void initRightPanelUI();
 
-    ChannelSelectorWidget *m_channelSelector;
-    DataStatisticsTable   *m_statsTable;
-    RulerWidget           *m_rulerWidget;
-    CommandWidget         *m_commandWidget;
+    ChannelSelectorWidget *channelSelector;
+    DataStatisticsTable   *statsTable;
+    RulerWidget           *rulerWidget;
+    CommandWidget         *commandWidget;
 
     QVBoxLayout *RightPanelMainLayout;
 
@@ -114,7 +122,6 @@ private:
     /*-----variable-----*/
     QVector<double> x;
     QVector<double> y;
-    const double PI = 3.14159265358979323846;
 
     QVector<QColor> colors = {
         Qt::red,
@@ -126,6 +133,13 @@ private:
         Qt::lightGray,
         Qt::darkCyan
     };
+
+    IDevice *device;
+    uint64_t sampleCounter = 0;
+
+    /* Thread */
+    QThread *daqThread;
+    DAQWorker *daqWorker;
 
 signals:
     void SelectDeviceClicked();

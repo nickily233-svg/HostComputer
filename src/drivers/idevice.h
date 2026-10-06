@@ -33,7 +33,7 @@ public:
     virtual void close() = 0; // 关闭设备
 
     //配置与状态
-    virtual bool configuare(const DAQConfig &config) = 0; // 配置设备参数
+    virtual bool configure(const DAQConfig &config) = 0; // 配置设备参数
     virtual DAQConfig getConfig() const = 0; // 获取当前配置
     virtual DAQStatus getStatus() const = 0; // 获取当前状态
 
@@ -47,10 +47,10 @@ public:
      * @param3 : 实际读取到的字节数
      * @param4 : 超时时间(Ms) -1:无限等待 0:非阻塞等待
      */
-    virtual bool readRawDate(void *buffer,size_t bufferSize,size_t &bytesRead,int timeoutMs) = 0;
+    virtual bool readRawData(void *buffer,size_t bufferSize,size_t &bytesRead,int timeoutMs) = 0;
 
     // 错误处理（通用）
-    virtual std::string getLastError() const = 0;
+    virtual std::string getError() const = 0;
 };
 
 #endif // IDEVICE_H

@@ -3,22 +3,67 @@
 DAQWidget::DAQWidget(QWidget *parent)
     : QWidget(parent),
     WavePlot(nullptr), statusLabel(nullptr), shadowEffect(nullptr),
-    m_channelSelector(nullptr), m_statsTable(nullptr),
-    m_rulerWidget(nullptr), m_commandWidget(nullptr)
+    channelSelector(nullptr), statsTable(nullptr),
+    rulerWidget(nullptr), commandWidget(nullptr)
 {
     WaveTimer = new QTimer(this);
     WaveTimer->setSingleShot(false);
     WaveTimer->setInterval(static_cast<double>(30.0f));
 
+    device = new MockDevice();
+    device->open();
+
+    DAQConfig config;
+    config.channels = 4;
+    config.sampleRate = 100000000.0f;
+    config.bitDepth = 16;
+    config.isInterleaved = true;
+
+    device->configure(config);
+    device->start();
+
+    daqThread = new QThread(this);
+    daqWorker = new DAQWorker(device);
+    daqWorker->moveToThread(daqThread);
+
+    // 连接信号槽
+    // 1. 开始采集线程
+    connect(daqThread,&QThread::started,daqWorker,&DAQWorker::startAcquisition);
+    // 2. 接受数据
+    connect(daqWorker,&DAQWorker::dataReady,this,&DAQWidget::onDataReady);
+    connect(daqWorker,&DAQWorker::statusUpdated,this,&DAQWidget::onStatusUpdated);
+
+    daqThread->start();
+
     initUI();
     setupConnections();
-
-    WaveTimer->start();
+    // WaveTimer->start();
 }
 
 DAQWidget::~DAQWidget()
 {
-
+    /*** 先停止线程 再删除设备 ***/
+    // 1. 通知 Worker 停止采集循环
+    if(daqWorker) {
+        daqWorker->stopAcquisition();
+    }
+    // 2. 退出线程并等待
+    if(daqThread) {
+        daqThread->quit();
+        daqThread->wait(); // 等待线程完全结束
+    }
+    // 3. 删除 Worker
+    if(daqWorker) {
+        delete daqWorker;
+        daqWorker = nullptr;
+    }
+    // 4. 关闭并删除设备
+    if (device) {
+        device->stop();
+        device->close();
+        delete device;
+        device = nullptr;
+    }
 }
 
 /*
@@ -226,15 +271,15 @@ void DAQWidget::initRightPanelUI()
 {
     RightPanelMainLayout = new QVBoxLayout(RightPanelWidget);
 
-    m_channelSelector = new ChannelSelectorWidget(RightPanelWidget);
-    m_statsTable      = new DataStatisticsTable(RightPanelWidget);
-    m_rulerWidget     = new RulerWidget(RightPanelWidget);
-    m_commandWidget   = new CommandWidget(RightPanelWidget);
+    channelSelector = new ChannelSelectorWidget(RightPanelWidget);
+    statsTable      = new DataStatisticsTable(RightPanelWidget);
+    rulerWidget     = new RulerWidget(RightPanelWidget);
+    commandWidget   = new CommandWidget(RightPanelWidget);
 
-    RightPanelMainLayout->addWidget(m_channelSelector);
-    RightPanelMainLayout->addWidget(m_statsTable);
-    RightPanelMainLayout->addWidget(m_rulerWidget);
-    RightPanelMainLayout->addWidget(m_commandWidget);
+    RightPanelMainLayout->addWidget(channelSelector);
+    RightPanelMainLayout->addWidget(statsTable);
+    RightPanelMainLayout->addWidget(rulerWidget);
+    RightPanelMainLayout->addWidget(commandWidget);
 
     statusLabel = new QLabel("未连接到设备",this);
     statusLabel->setFixedHeight(100);
@@ -299,16 +344,53 @@ void DAQWidget::setupConnections()
         WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
     }
 
-    connect(m_channelSelector, &ChannelSelectorWidget::channelVisibilityChanged,this,[=](int row,bool checked){
-        m_statsTable->setRowHidden(row,!checked);
+    connect(channelSelector, &ChannelSelectorWidget::channelVisibilityChanged,this,[=](int row,bool checked){
+        statsTable->setRowHidden(row,!checked);
     });
 
-    connect(m_commandWidget, &CommandWidget::commandSent, this,
+    connect(commandWidget, &CommandWidget::commandSent, this,
         [=](QString addr, QString data, bool isHex){
             emit requestSendHardwareCommand(addr, data, isHex);
     });
 
-    m_statsTable->setRowHidden(0,false);
+    statsTable->setRowHidden(0,false);
+}
+
+void DAQWidget::onDataReady(const QByteArray &rawData, quint64 bytesRead)
+{
+    const int16_t *samples = reinterpret_cast<const int16_t*>(rawData.constData());
+    size_t totalSamples = bytesRead / sizeof(int16_t);
+    size_t pointsPerChannel = totalSamples / 4;
+
+    static QVector<double> x(pointsPerChannel);
+    static std::vector<QVector<double>> yChannels(4, QVector<double>(pointsPerChannel));
+
+    if (x.size() != (int)pointsPerChannel) {
+        x.resize(pointsPerChannel);
+        for (int ch = 0; ch < 4; ++ch) {
+            yChannels[ch].resize(pointsPerChannel);
+        }
+    }
+
+    for (size_t i = 0; i < pointsPerChannel; ++i) {
+        x[i] = sampleCounter + i;
+        for (int ch = 0; ch < 4; ++ch) {
+            yChannels[ch][i] = samples[i * 4 + ch] / 20000.0;
+        }
+    }
+    sampleCounter += pointsPerChannel;
+
+    for (int ch = 0; ch < 4; ++ch) {
+        WavePlot->graph(ch)->setData(x, yChannels[ch]);
+    }
+
+    WavePlot->xAxis->setRange(sampleCounter, pointsPerChannel, Qt::AlignRight);
+    WavePlot->replot(QCustomPlot::rpQueuedReplot);
+}
+
+void DAQWidget::onStatusUpdated(const DAQStatus &status)
+{
+
 }
 
 /*
