@@ -50,6 +50,11 @@ private slots:
     void onDataReady(const QByteArray &rawData,quint64 bytesRead);
     void onStatusUpdated(const DAQStatus &status);
 
+    /* 设备控制槽函数 */
+    void onOpenDeviceBtnClicked();   // 处理打开/停止采集按钮
+    void onSelectDeviceBtnClicked(); // 处理选择设备按钮
+    void onSampleRateChanged(int index); // 处理采样率改变
+
 protected:
     bool eventFilter(QObject *wtched, QEvent *event) override;
 
@@ -105,6 +110,12 @@ private:
     QLabel *percentLabel;
 
     QStringList ChxList = {"通道1","通道2","通道3","通道4"};
+
+    /* 设备状态 */
+    bool isDeviceSelected = false; // 是否选择了设备
+    bool isDeviceOpened = false; // 是否已打开设备
+    bool isAcquiring = false; // 是否正在采集
+    DAQConfig currentConfig; // 保存当前设备的配置
 
     /*-----ptr-----*/
     void initRightPanelUI();

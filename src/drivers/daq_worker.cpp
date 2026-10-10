@@ -2,8 +2,8 @@
 
 DAQWorker::DAQWorker(IDevice *device,QObject *parent)
     : QObject(parent),
-    isRunning(false),
-    device(device)
+    device(device),
+    isRunning(false)
 {
 
 }
@@ -39,6 +39,16 @@ void DAQWorker::startAcquisition()
         if (++statusCounter >= 10) {
             emit statusUpdated(device->getStatus());
             statusCounter = 0;
+        }
+    }
+
+    while(isRunning) {
+        if(!device->getStatus().isRunning) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
+        if(device->readRawData(rawBuffer.data(),BUFFER_SIZE,bytesRead,100)) {
+            emit dataReady(rawBuffer,static_cast<quint64>(bytesRead));
         }
     }
 

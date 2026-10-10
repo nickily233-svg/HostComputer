@@ -4,6 +4,7 @@
 #include "src/drivers/idevice.h"
 #include <chrono>
 #include <random>
+#include <atomic>
 
 #ifndef PI
 #define PI 3.14159265358979323846
@@ -30,8 +31,8 @@ public :
     std::string getError() const override;
 
 private :
-    bool isOpen;
-    bool isRunning;
+    std::atomic<bool> isOpen;
+    std::atomic<bool> isRunning;
 
     DAQStatus status;
     DAQConfig config;

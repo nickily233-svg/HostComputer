@@ -14,7 +14,7 @@ MockDevice::MockDevice()
     config.channels = 4;
     config.bitDepth = 16;
     config.isInterleaved = true;
-    config.sampleRate = 1000.0;
+    config.sampleRate = 1000.0f;
     config.triggerMode = 0;
 
     status = {0,0,0,0,false};
@@ -46,8 +46,8 @@ bool MockDevice::configure(const DAQConfig &import_config)
     if(!isOpen) {
         Error = "Device is not Open.";
         return false;
-    } else if(config.channels <= 0 || config.sampleRate <= 0) {
-        Error = "Invaild configuration parameters.";
+    } else if(import_config.channels <= 0 || import_config.sampleRate <= 0) {
+        Error = "Invalid configuration parameters.";
         return false;
     }
 
@@ -94,7 +94,7 @@ void MockDevice::stop()
 bool MockDevice::readRawData(void *buffer,size_t bufferSize,size_t &bytesRead,int timeoutMs)
 {
     bytesRead = 0;
-    if(!isRunning | !isOpen) {
+    if(!isRunning.load() || !isOpen.load()) {
         Error = "Device is not running or not open.";
         return false;
     }
@@ -102,7 +102,7 @@ bool MockDevice::readRawData(void *buffer,size_t bufferSize,size_t &bytesRead,in
     // 模拟硬件阻塞延迟
     // 真实硬件会在此处等待 DMA 完成
     if(timeoutMs >= 0) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     // 计算缓冲区能够容纳多少样本
@@ -110,7 +110,7 @@ bool MockDevice::readRawData(void *buffer,size_t bufferSize,size_t &bytesRead,in
     size_t samplePerChannel = totalSamples / config.channels;
 
     if(samplePerChannel == 0) {
-        Error = "Bufer size is too small.";
+        Error = "Buffer size is too small.";
         return false;
     }
 
@@ -123,7 +123,7 @@ bool MockDevice::readRawData(void *buffer,size_t bufferSize,size_t &bytesRead,in
 
         for(int ch = 0;ch < config.channels;++ch) {
             // 模拟不同通道的正弦波:100Hz, 200Hz, 300Hz, 400Hz
-            double frequency = 100.0 * (ch + 1);
+            double frequency = (config.sampleRate / 100.0) * (ch + 1);
             double amplitude = 1.0 + ch * 0.2;
 
             double signal = amplitude * std::sin(2.0 * PI * frequency * currentTime);

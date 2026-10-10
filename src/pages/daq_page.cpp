@@ -10,20 +10,16 @@ DAQWidget::DAQWidget(QWidget *parent)
     WaveTimer->setSingleShot(false);
     WaveTimer->setInterval(static_cast<double>(30.0f));
 
+    // UI
+    initUI();
+    setupConnections();
+
+    // 创建模拟设备
     device = new MockDevice();
-    device->open();
-
-    DAQConfig config;
-    config.channels = 4;
-    config.sampleRate = 100000000.0f;
-    config.bitDepth = 16;
-    config.isInterleaved = true;
-
-    device->configure(config);
-    device->start();
-
+    // 创建线程和 Worker
     daqThread = new QThread(this);
     daqWorker = new DAQWorker(device);
+
     daqWorker->moveToThread(daqThread);
 
     // 连接信号槽
@@ -32,11 +28,6 @@ DAQWidget::DAQWidget(QWidget *parent)
     // 2. 接受数据
     connect(daqWorker,&DAQWorker::dataReady,this,&DAQWidget::onDataReady);
     connect(daqWorker,&DAQWorker::statusUpdated,this,&DAQWidget::onStatusUpdated);
-
-    daqThread->start();
-
-    initUI();
-    setupConnections();
     // WaveTimer->start();
 }
 
@@ -103,7 +94,7 @@ void DAQWidget::initUI()
 void DAQWidget::initTopBar()
 {
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBarWidget);
-    QStringList SampleList = {"1000 ", "4000 ", "10000 ", "100000 "};
+    QStringList SampleList = {"1000", "4000", "10000", "100000"};
     QStringList SampleNumList = {"1 ","2 ","3 ","4 "};
 
     SelectDeviceBtn = new QPushButton("选择设备",topBarWidget);
@@ -196,7 +187,9 @@ void DAQWidget::initWaveArea()
 
     WavePlot = new QCustomPlot(waveAreaWidget);
     ShowWaveLegend();
-    WavePlot->setOpenGl(true);
+    WavePlot->setOpenGl(false);
+    WavePlot->setNoAntialiasingOnDrag(true);
+    // WavePlot->setNotAntialiasedElements(QCP::aeAll);
 
     WaveLayout->addWidget(WavePlot);
 
@@ -344,8 +337,15 @@ void DAQWidget::setupConnections()
         WavePlot->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom);
     }
 
+    /* 通道选择 */
     connect(channelSelector, &ChannelSelectorWidget::channelVisibilityChanged,this,[=](int row,bool checked){
+        /* 控制表格行的隐藏/显示 */
         statsTable->setRowHidden(row,!checked);
+        /* 控制波形图层的隐藏/显示 */
+        if(row >= 0 && row < WavePlot->graphCount()) {
+            WavePlot->graph(row)->setVisible(checked);
+            WavePlot->replot();
+        }
     });
 
     connect(commandWidget, &CommandWidget::commandSent, this,
@@ -353,7 +353,77 @@ void DAQWidget::setupConnections()
             emit requestSendHardwareCommand(addr, data, isHex);
     });
 
+    connect(OpenDeviceBtn,&QPushButton::clicked,this,&DAQWidget::onOpenDeviceBtnClicked);
+    connect(SelectDeviceBtn,&QPushButton::clicked,this,&DAQWidget::onSelectDeviceBtnClicked);
+
+    /* 采样率发生变化 */
+    connect(SampleRateComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),this, &DAQWidget::onSampleRateChanged);
+
+    WavePlot->graph(1)->setVisible(false);
+    WavePlot->graph(2)->setVisible(false);
+    WavePlot->graph(3)->setVisible(false);
     statsTable->setRowHidden(0,false);
+}
+
+void DAQWidget::onOpenDeviceBtnClicked()
+{
+    if(!isDeviceOpened) {
+        if(device->open()) {
+            currentConfig.channels = 4;
+            currentConfig.bitDepth = 16;
+            currentConfig.isInterleaved = true;
+            currentConfig.sampleRate = SampleRateComboBox->currentText().trimmed().toDouble();
+
+            device->configure(currentConfig);
+            device->start();
+            if(!daqThread->isRunning()) {
+                daqThread->start();
+            }
+            // status change
+            isDeviceOpened = true;
+            isAcquiring = true;
+
+            OpenDeviceBtn->setText("停止采集");
+            statusLabel->setText("已连接到设备\n正在采集...");
+            StatusLabel->setText("正在采样");
+        } else {
+            qDebug() << "打开设备失败:" << QString::fromStdString(device->getError());
+        }
+    } else {
+        device->stop();
+        device->close();
+        /*** 通知 Worker 停止采集循环 ***/
+        daqWorker->stopAcquisition();
+
+        isDeviceOpened = false;
+        isAcquiring = false;
+
+        OpenDeviceBtn->setText("打开设备");
+        statusLabel->setText("未连接到设备");
+        StatusLabel->setText("已停止采样");
+    }
+}
+
+void DAQWidget::onSelectDeviceBtnClicked()
+{
+
+}
+
+void DAQWidget::onSampleRateChanged(int index)
+{
+    Q_UNUSED(index);
+
+    if(isDeviceOpened) {
+        isAcquiring = false;
+        device->stop();
+        currentConfig.sampleRate = SampleRateComboBox->currentText().toDouble();
+        device->configure(currentConfig);
+        device->start();
+        isAcquiring = true;
+        OpenDeviceBtn->setText("停止采集");
+        StatusLabel->setText("正在采样");
+        qDebug() << "采样率已切换为:" << currentConfig.sampleRate;
+    }
 }
 
 void DAQWidget::onDataReady(const QByteArray &rawData, quint64 bytesRead)
@@ -364,6 +434,10 @@ void DAQWidget::onDataReady(const QByteArray &rawData, quint64 bytesRead)
 
     static QVector<double> x(pointsPerChannel);
     static std::vector<QVector<double>> yChannels(4, QVector<double>(pointsPerChannel));
+
+    if(!WavePlot || WavePlot->graphCount() < 4) {
+        return;
+    }
 
     if (x.size() != (int)pointsPerChannel) {
         x.resize(pointsPerChannel);
@@ -381,9 +455,16 @@ void DAQWidget::onDataReady(const QByteArray &rawData, quint64 bytesRead)
     sampleCounter += pointsPerChannel;
 
     for (int ch = 0; ch < 4; ++ch) {
-        WavePlot->graph(ch)->setData(x, yChannels[ch]);
+        WavePlot->graph(ch)->setData(x,yChannels[ch],true);
+        if (WavePlot->graph(ch)->dataCount() > 200000) {
+            WavePlot->graph(ch)->data()->removeBefore(sampleCounter - 50000);
+        }
     }
 
+    // double currentUpper = WavePlot->xAxis->range().upper;
+    // if (std::abs(currentUpper - sampleCounter) < pointsPerChannel * 2) {
+    //     WavePlot->xAxis->setRange(sampleCounter, pointsPerChannel, Qt::AlignRight);
+    // }
     WavePlot->xAxis->setRange(sampleCounter, pointsPerChannel, Qt::AlignRight);
     WavePlot->replot(QCustomPlot::rpQueuedReplot);
 }
