@@ -1,5 +1,5 @@
-#ifndef RIGHTPANELLOG_H
-#define RIGHTPANELLOG_H
+#ifndef RIGHT_PANEL_LOG_H
+#define RIGHT_PANEL_LOG_H
 
 #include <QWidget>
 #include <QPlainTextEdit>
@@ -38,4 +38,4 @@ signals:
 
 };
 
-#endif // RIGHTPANELLOG_H
+#endif // RIGHT_PANEL_LOG_H

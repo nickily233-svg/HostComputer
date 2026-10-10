@@ -4,8 +4,8 @@
 #include <QWidget>
 #include "qcustomplot.h"
 #include "src/widgets/xy_control_widget.h"
-#include "src/widgets/centerGalvoPosPanel.h"
-#include "src/widgets/rightPanelLog.h"
+#include "src/widgets/center_galvo_pos_panel.h"
+#include "src/widgets/right_panel_log.h"
 
 class GalvoWidget : public QWidget
 {

@@ -1,4 +1,4 @@
-#include "src/widgets/rightPanelLog.h"
+#include "src/widgets/right_panel_log.h"
 
 RightPanelWidget::RightPanelWidget(QWidget *parent)
 {

@@ -1,5 +1,5 @@
-#ifndef CENTERGALVOWIDGET_H
-#define CENTERGALVOWIDGET_H
+#ifndef CENTER_GALVO_POS_PANEL_H
+#define CENTER_GALVO_POS_PANEL_H
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -27,4 +27,4 @@ signals :
 
 };
 
-#endif CENTERGALVOWIDGET_H
+#endif CENTER_GALVO_POS_PANEL_H

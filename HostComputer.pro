@@ -40,20 +40,20 @@ HEADERS += \
 # 自定义控件 (widgets)
 #-------------------------------------------------------------------------------
 SOURCES += \
-    src/widgets/centerGalvoPosPanel.cpp \
+    src/widgets/center_galvo_pos_panel.cpp \
     src/widgets/channel_selector.cpp \
     src/widgets/command_widget.cpp \
     src/widgets/data_statistics_table.cpp \
-    src/widgets/rightPanelLog.cpp \
+    src/widgets/right_panel_log.cpp \
     src/widgets/ruler_widget.cpp \
     src/widgets/xy_control_widget.cpp
 
 HEADERS += \
-    src/widgets/centerGalvoPosPanel.h \
+    src/widgets/center_galvo_pos_panel.h \
     src/widgets/channel_selector.h \
     src/widgets/command_widget.h \
     src/widgets/data_statistics_table.h \
-    src/widgets/rightPanelLog.h \
+    src/widgets/right_panel_log.h \
     src/widgets/ruler_widget.h \
     src/widgets/xy_control_widget.h
 
@@ -104,7 +104,7 @@ HEADERS += \
 # 核心层 (core): 采集数据模型与存盘 / 振镜协议 / 环形缓冲
 #-------------------------------------------------------------------------------
 SOURCES += \
-    src/core/daq/DaqCsvSaver.cpp \
+    src/core/daq/daq_csv_saver.cpp \
     src/core/daq/daq_data_model.cpp \
     src/core/galvo/galvo_controller.cpp \
     src/core/galvo/galvo_data_types.cpp \
@@ -112,7 +112,7 @@ SOURCES += \
     src/core/ringbuffer/ringbuffer.cpp
 
 HEADERS += \
-    src/core/daq/DaqCsvSaver.h \
+    src/core/daq/daq_csv_saver.h \
     src/core/daq/daq_data_model.h \
     src/core/galvo/galvo_controller.h \
     src/core/galvo/galvo_data_types.h \

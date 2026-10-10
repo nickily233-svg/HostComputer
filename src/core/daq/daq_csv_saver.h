@@ -1,5 +1,5 @@
-#ifndef DAQCSVSAVER_H
-#define DAQCSVSAVER_H
+#ifndef DAQ_CSV_SAVER_H
+#define DAQ_CSV_SAVER_H
 
 #include <QObject>
 #include <QFile>
@@ -24,4 +24,4 @@ private :
 };
 
 
-#endif // DAQCSVSAVER_H
+#endif // DAQ_CSV_SAVER_H

@@ -1,4 +1,4 @@
-#include "src/widgets/centerGalvoPosPanel.h"
+#include "src/widgets/center_galvo_pos_panel.h"
 
 CenterGalvoWidget::CenterGalvoWidget(QWidget *parent) : QWidget(parent)
 {
