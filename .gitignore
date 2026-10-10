@@ -1,0 +1,48 @@
+# ============================================================
+# 构建产物 —— 由 Qt Creator / qmake / MSVC 生成，不入库
+# ============================================================
+build/
+build-*/
+debug/
+release/
+
+# qmake 生成的工程文件
+Makefile
+Makefile.Debug
+Makefile.Release
+.qmake.stash
+.qmake.cache
+
+# moc / rcc 生成文件（源码内构建时会出现）
+moc_*.cpp
+moc_*.h
+moc_predefs.h
+qrc_*.cpp
+ui_*.h
+*.moc
+
+# 编译中间件与可执行文件
+*.obj
+*.o
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.idb
+
+# 构建目录中的调试/中间文件（MSVC、clangd）
+*.tlog
+*.log
+*.recipe
+*.d
+*.dSYM/
+
+# Qt Creator / clangd 本地配置
+*.pro.user
+*.pro.user.*
+.qtc_clangd/
+compile_commands.json
+
+# 运行期输出
+*.csv
+*.autosave

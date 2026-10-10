@@ -12,7 +12,7 @@
 #include "src/pages/galvo_page.h"
 // Dialog
 #include "src/dialog/deviceselectdialog.h"
-#include "SRC/dialog/adcselect.h"
+#include "src/dialog/adcselect.h"
 
 class MainWindow : public QMainWindow
 {

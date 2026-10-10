@@ -9,7 +9,7 @@ MainWindow::MainWindow(QMainWindow *parent)
 {
     setMinimumSize(1280, 800);
     this->setWindowTitle("多功能数据采集仪 -- NEFU -- LiuYang");
-    this->setWindowIcon(QIcon(":/icons/res/NEFUIcon.ico"));
+    this->setWindowIcon(QIcon(":/icons/NEFUIcon.ico"));
     initUI();
 }
 
